@@ -15,7 +15,7 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findById(req.params.id)
+  Card.findById(req.params._id)
     .then((card) => res.send({ data: card }))
     .catch(() => res.status(404).send({ message: 'Такой карточки уже не существует' }));
 };
