@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const card = new mongoose.Schema({
+const cardSchema = new mongoose.Schema({
   name: {
     type: String,
     minlength: 2,
@@ -31,4 +31,4 @@ const card = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('card', card);
+module.exports = mongoose.model('card', cardSchema);
