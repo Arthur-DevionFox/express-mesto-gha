@@ -7,8 +7,8 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  User.findById(req.params._id)
-    .then((user) =>res.send({ data: user }))
+  User.findById(req.params.id)
+    .then((user) => res.send({ data: user }))
     .catch(() => res.status(404).send({ message: 'Пользователь с таким id не найден' }));
 };
 
