@@ -10,6 +10,13 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use((req, res, next) => {
+  req.user = {
+    _id: '64a08c746e2003ab285b35c9'
+  }
+
+  next()
+})
 
 mongoose.connect(BASE_PATH)
   .then(() => {
