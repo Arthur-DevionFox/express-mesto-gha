@@ -20,7 +20,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params
+  const { userId } = req.params._id
 
   findById(req, res, next, userId)
 };
