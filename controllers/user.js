@@ -1,15 +1,22 @@
+const mongoose = require('mongoose');
 const User = require('../models/user');
+const NotFoundError = require('../errors/not-found');
+const IncorrectDataError = require('../errors/incorrect-data');
+const { STATUS_OK } = require('../utils/status-constants');
 
-module.exports.getUsers = (req, res) => {
+const { ValidationError } = mongoose.Error;
+
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(404).send({ message: 'Что-то сломалось' }));
+    .then((users) => res.send(users))
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(404).send({ message: 'Пользователь с таким id не найден' }));
+    .orFail(new NotFoundError(`Пользователь с данным id: ${id} не найден`))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 module.exports.createUser = (req, res) => {
