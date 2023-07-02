@@ -6,6 +6,13 @@ const { STATUS_OK } = require('../utils/status-constants');
 
 const { ValidationError } = mongoose.Error;
 
+const findById = (req, res, next, id) => {
+  User.findById(id)
+    .orFail(new NotFoundError(`Пользователь с данным id: ${id} не найден`))
+    .then((user) => res.send(user))
+    .catch(next)
+}
+
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
@@ -13,12 +20,9 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const userId = req.params
+  const { userId } = req.params
 
-  User.findById(userId)
-    .orFail(new NotFoundError(`Пользователь с данным id: ${id} не найден`))
-    .then((user) => res.send(user))
-    .catch(next);
+  findById(req, res, next, userId)
 };
 
 module.exports.createUser = (req, res) => {
