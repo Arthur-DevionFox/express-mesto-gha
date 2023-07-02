@@ -5,12 +5,11 @@ const  IncorrectDataError  = require('../errors/incorrect-data');
 const findById = (req, res, next, _id) => {
   User.findById(_id)
     .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
-    .then((user) => res.send(user).status(200))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new IncorrectDataError('Данные введены некорректно'));
-        res.send({ message: 'Данные введены некорректно'}).status(404)
-        return;
+        next(new IncorrectDataError(res.send({ message: 'Данные введены некорректно'}).status(404)));
+        return
       }
       next(err);
     });
