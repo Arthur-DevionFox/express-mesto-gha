@@ -28,8 +28,8 @@ module.exports.deleteCard = (req, res, next) => {
 
 module.exports.likeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-    .then(() => {
-      if (!req.params.cardId) {
+    .then((card) => {
+      if (!card) {
         res.status(404).send({ message: 'Такой карточки не существует' })
       } else {
         res.status(200).send({ message: 'Лайк поставлен' })
@@ -43,8 +43,8 @@ module.exports.likeCard = (req, res) => {
 
 module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-    .then(() => {
-      if (!req.params.cardId) {
+    .then((card) => {
+      if (!card) {
         res.status(404).send({ message: 'Такой карточки не существует' })
       } else {
         res.status(200).send({ message: 'Лайк удален' })

@@ -30,6 +30,9 @@ mongoose.connect(BASE_PATH)
 
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
+app.use('*', (req, res, next) => {
+  res.status(404).send({ message: 'Такого пути не существует'})
+})
 
 app.use(express.static(path.join(__dirname, 'public')));
 
