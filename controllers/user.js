@@ -20,14 +20,17 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params.userId ? req.params.userId : req.user._id;
+  const { userId } = req.params;
 
   User.findById(userId)
-    .orFail(new IncorrectDataError(`Пользователь с заданным id не найден`))
-    .then((user) => res.send({message: 'пользователь найден', data: user}).status(STATUS_OK))
-    .catch((err) => {
-      res.status(400).send({ message: err })
+    .then((user) => {
+      if (!user) {
+        throw new IncorrectDataError('Пользователь с подобный id не существует')
+      } else {
+        res.send({message: 'пользователь найден', user}).status(STATUS_OK)
+      }
     })
+    .catch(next())
 };
 
 module.exports.createUser = (req, res) => {

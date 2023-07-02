@@ -28,8 +28,8 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
-app.use('/', require('./routes/user'));
-app.use('/', require('./routes/card'));
+app.use('/users', require('./routes/user'));
+app.use('/cards', require('./routes/card'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
