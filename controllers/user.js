@@ -10,8 +10,8 @@ const findById = (req, res, next, id) => {
   User.findById(id)
     .orFail(new NotFoundError(`Пользователь с данным id: ${id} не найден`))
     .then((user) => res.send(user))
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -20,9 +20,9 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params._id
+  const { userId } = req.params._id;
 
-  findById(req, res, next, userId)
+  findById(req, res, next, userId);
 };
 
 module.exports.createUser = (req, res) => {
