@@ -10,8 +10,8 @@ const findById = (req, res, next, _id) => {
   User.findById(_id)
     .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .catch((user, err) => {
+      if (!user && err.name === 'ValidationError') {
         next(new ValidationError('Данные введены некорректно'))
         return
       } next(err)
