@@ -6,15 +6,15 @@ const findById = (req, res, next, id) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        res.send({message: `Пользователь с данным id: ${id} не найден`}).status(404)
+        res.status(404).send({message: `Пользователь с данным id: ${id} не найден`})
       }
       else {
-        res.send(user).status(200);
+        res.status(200).send(user);
       }
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.send({message: `Введенный id: ${id} не является валидным`})
+        res.status(400).send({message: `Введенный id: ${id} не является валидным`})
       }
     })
 };
