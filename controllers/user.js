@@ -2,17 +2,21 @@ const User = require('../models/user');
 const  NotFoundError  = require('../errors/not-found');
 const  IncorrectDataError  = require('../errors/incorrect-data');
 
-const findById = (req, res, next, _id) => {
-  User.findById(_id)
-    .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
-    .then((user) => res.send(user))
+const findById = (req, res, next, id) => {
+  User.findById(id)
+    .then((user) => {
+      if (!user) {
+        res.send({message: `Пользователь с данным id: ${id} не найден`}).status(404)
+      }
+      else {
+        res.send(user).status(200);
+      }
+    })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new IncorrectDataError(res.send({ message: 'Данные введены некорректно'}).status(404)));
-        return
+        res.send({message: `Введенный id: ${id} не является валидным`})
       }
-      next(err);
-    });
+    })
 };
 
 module.exports.getUsers = (req, res, next) => {
@@ -22,7 +26,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params;
+  const { userId } = req.params
   findById(req, res, next, userId);
 };
 
