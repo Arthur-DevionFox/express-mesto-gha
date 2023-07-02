@@ -6,11 +6,16 @@ const { STATUS_OK } = require('../utils/status-constants');
 
 const { ValidationError } = mongoose.Error;
 
-const findById = (req, res, next, id) => {
-  User.findById(id)
-    .orFail(new NotFoundError(`Пользователь с данным id: ${id} не найден`))
+const findById = (req, res, next, _id) => {
+  User.findById(_id)
+    .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('Данные введены некорректно'))
+        return
+      } next(err)
+    });
 };
 
 module.exports.getUsers = (req, res, next) => {
@@ -22,15 +27,12 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
 
-  User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        throw new IncorrectDataError('Пользователь с подобный id не существует')
-      } else {
-        res.send({message: 'пользователь найден', user}).status(STATUS_OK)
-      }
-    })
-    .catch(next())
+  findById(req, res, next, userId);
+
+  /*User.findById(userId)
+    .orFail(new IncorrectDataError('Пользователь с подобный id не существует'))
+    .then((user) => res.send({message: 'пользователь найден', user}).status(STATUS_OK))
+    .catch(next())*/
 };
 
 module.exports.createUser = (req, res) => {
