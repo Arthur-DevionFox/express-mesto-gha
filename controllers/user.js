@@ -1,10 +1,7 @@
-const mongoose = require('mongoose');
 const User = require('../models/user');
 const NotFoundError = require('../errors/not-found');
 const IncorrectDataError = require('../errors/incorrect-data');
 const { STATUS_OK } = require('../utils/status-constants');
-
-const { ValidationError } = mongoose.Error;
 
 const findById = (req, res, next, _id) => {
   User.findById(_id)
@@ -12,10 +9,10 @@ const findById = (req, res, next, _id) => {
     .then((user) => res.send(user).status(STATUS_OK))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new IncorrectDataError('Данные введены некорректно'))
-        return
+        next(new IncorrectDataError({ message: 'Данные введены некорректно' }));
+        return;
       }
-      next(err)
+      next(err);
     });
 };
 
@@ -29,11 +26,6 @@ module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
 
   findById(req, res, next, userId);
-
-  /*User.findById(userId)
-    .orFail(new IncorrectDataError('Пользователь с подобный id не существует'))
-    .then((user) => res.send({message: 'пользователь найден', user}).status(STATUS_OK))
-    .catch(next())*/
 };
 
 module.exports.createUser = (req, res) => {
