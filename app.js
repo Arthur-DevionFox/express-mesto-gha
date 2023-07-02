@@ -10,6 +10,14 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
+mongoose.connect(BASE_PATH)
+  .then(() => {
+    console.log('Подключение произошло успешно. Поздравляю, пользователь');
+  }).catch((err) => {
+    console.error(err);
+    console.log(err);
+  });
+
 app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -20,19 +28,8 @@ app.use((req, res, next) => {
 
   next();
 });
-app.use(express.static(path.join(__dirname, 'public')));
-
-mongoose.connect(BASE_PATH)
-  .then(() => {
-    console.log('Подключение произошло успешно. Поздравляю, пользователь');
-  }).catch((err) => {
-    console.error(err);
-    console.log(err);
-  });
-
 app.use(router)
-
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
