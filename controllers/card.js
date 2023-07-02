@@ -16,11 +16,11 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndUpdate(req.params.cardId)
-    .then(() => {
-      if (!req.params.cardId) {
+    .then((card) => {
+      if (!card) {
         res.status(404).send({ message: 'Такой карточки уже не существует' })
       } else {
-        Card.findByIdAndRemove(req.params.cardId)
+        return Card.findByIdAndRemove(req.params.cardId);
       }
     })
     .catch(() => res.status(400).send({ message: 'Такой карточки уже не существует' }));
