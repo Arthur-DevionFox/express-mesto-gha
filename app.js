@@ -2,6 +2,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const router = require('./routes/index');
 
 const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
 
@@ -19,6 +20,7 @@ app.use((req, res, next) => {
 
   next();
 });
+app.use(express.static(path.join(__dirname, 'public')));
 
 mongoose.connect(BASE_PATH)
   .then(() => {
@@ -28,10 +30,9 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
-app.use('/', require('./routes/user'));
-app.use('/', require('./routes/card'));
+app.use('/', router)
 
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
