@@ -1,15 +1,15 @@
 const User = require('../models/user');
-const NotFoundError = require('../errors/not-found');
-const IncorrectDataError = require('../errors/incorrect-data');
-const { STATUS_OK } = require('../utils/status-constants');
+const  NotFoundError  = require('../errors/not-found');
+const  IncorrectDataError  = require('../errors/incorrect-data');
 
 const findById = (req, res, next, _id) => {
   User.findById(_id)
     .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
-    .then((user) => res.send(user).status(STATUS_OK))
+    .then((user) => res.send(user).status(200))
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(new IncorrectDataError({ message: 'Данные введены некорректно' }));
+      if (err.kind === 'ObjectId') {
+        next(new IncorrectDataError('Данные введены некорректно'));
+        res.send({ message: 'Данные введены некорректно'}).status(404)
         return;
       }
       next(err);
@@ -24,7 +24,6 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUser = (req, res, next) => {
   const { userId } = req.params;
-
   findById(req, res, next, userId);
 };
 
