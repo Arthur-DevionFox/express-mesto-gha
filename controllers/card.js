@@ -10,20 +10,20 @@ module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(200).send({ data: card, id: req.params.cardId }))
+    .then((card) => res.status(200).send({ data: card, id: req.params }))
     .catch(() => res.status(400).send({ message: 'Введенные данные не верны' }));
 };
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndUpdate(req.params.cardId)
+module.exports.deleteCard = (req, res, next) => {
+  Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Такой карточки уже не существует' })
       } else {
-        return Card.findByIdAndRemove(req.params.cardId);
+        next()
       }
     })
-    .catch(() => res.status(400).send({ message: 'Такой карточки уже не существует' }));
+    .catch(() => res.status(400).send({ message: 'Что-то пошло не так' }));
 };
 
 module.exports.likeCard = (req, res) => {
