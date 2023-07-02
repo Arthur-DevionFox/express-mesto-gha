@@ -9,12 +9,13 @@ const { ValidationError } = mongoose.Error;
 const findById = (req, res, next, _id) => {
   User.findById(_id)
     .orFail(new NotFoundError(`Пользователь с данным id: ${_id} не найден`))
-    .then((user) => res.send(user))
-    .catch((user, err) => {
-      if (!user && err.name === 'ValidationError') {
-        next(new ValidationError('Данные введены некорректно'))
+    .then((user) => res.send(user).status(STATUS_OK))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        next(new IncorrectDataError('Данные введены некорректно'))
         return
-      } next(err)
+      }
+      next(err)
     });
 };
 
