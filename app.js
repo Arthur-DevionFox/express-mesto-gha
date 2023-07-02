@@ -30,7 +30,7 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
-app.use('/', router)
+app.use(router)
 
 
 
