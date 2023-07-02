@@ -23,17 +23,12 @@ module.exports.getUser = (req, res, next) => {
   const { userId } = req.params.userId ? req.params.userId : req.user._id;
 
   User.findById(userId)
-    .then((user) => {
-  if (!user) {
-    new IncorrectDataError(`Пользователь указанным id не найден`)
-  } else {
-    res.send(user)
-  }}
-).catch((err) => {
-    if (err.kind === 'ObjectId') {
-      next(new ValidationError('Формат id некорректен'))
-    }
-  })};
+    .orFail(new IncorrectDataError(`Пользователь с заданным id не найден`))
+    .then((user) => res.send({message: 'пользователь найден', data: user}).status(STATUS_OK))
+    .catch((err) => {
+      res.status(400).send({ message: err })
+    })
+};
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
