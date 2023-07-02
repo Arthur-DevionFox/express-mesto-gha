@@ -20,10 +20,20 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  const { userId } = req.params._id;
+  const { userId } = req.params.userId ? req.params.userId : req.user._id;
 
-  findById(req, res, next, userId);
-};
+  User.findById(userId)
+    .then((user) => {
+  if (!user) {
+    new IncorrectDataError(`Пользователь указанным id не найден`)
+  } else {
+    res.send(user)
+  }}
+).catch((err) => {
+    if (err.kind === 'ObjectId') {
+      next(new ValidationError('Формат id некорректен'))
+    }
+  })};
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
