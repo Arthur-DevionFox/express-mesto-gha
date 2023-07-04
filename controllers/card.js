@@ -11,7 +11,13 @@ module.exports.createCard = (req, res) => {
 
   Card.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send({ data: card, id: req.params.cardId }))
-    .catch(() => res.status(400).send({ message: 'Введенные данные не верны' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Введенные данные не верны' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+      }
+    });
 };
 
 module.exports.deleteCard = (req, res) => {
@@ -23,7 +29,13 @@ module.exports.deleteCard = (req, res) => {
         res.status(200).send({ message: 'Карточка успешно удалена' });
       }
     })
-    .catch(() => res.status(400).send({ message: 'Что-то пошло не так' }));
+    .catch((err) => {
+      if (err.kind === 'ObjectId') {
+        res.status(400).send({ message: 'Введенные данные не верны' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+      }
+    });
 };
 
 module.exports.likeCard = (req, res) => {
