@@ -48,7 +48,7 @@ module.exports.likeCard = (req, res) => {
       }
     })
     .catch(() => {
-      res.status(400).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
     });
 };
 
@@ -62,6 +62,6 @@ module.exports.dislikeCard = (req, res) => {
       }
     })
     .catch(() => {
-      res.status(400).send({ message: 'Произошла ошибка' });
+      res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
     });
 };
