@@ -12,6 +12,8 @@ const findById = (req, res, next, id) => {
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         res.status(400).send({ message: `Введенный id: ${id} не является валидным` });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
       }
     });
 };
@@ -31,8 +33,14 @@ module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Введенные данные не верны' }));
+    .then((user) => res.status(201).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Введенные данные не верны' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+      }
+    });
 };
 
 module.exports.updateUser = (req, res) => {
@@ -40,7 +48,13 @@ module.exports.updateUser = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Введенные данные не верны' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Введенные данные не верны' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+      }
+    });
 };
 
 module.exports.updateAvatar = (req, res) => {
@@ -48,5 +62,11 @@ module.exports.updateAvatar = (req, res) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Введенные данные не верны' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: 'Введенные данные не верны' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+      }
+    });
 };
