@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 
+const someError = require('./middlewares/error')
+
 const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
 
 const { PORT = 3000 } = process.env;
@@ -12,13 +14,6 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64a08c746e2003ab285b35c9',
-  };
-
-  next();
-});
 
 mongoose.connect(BASE_PATH)
   .then(() => {
@@ -36,6 +31,7 @@ app.use('*', (req, res) => {
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(someError)
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');

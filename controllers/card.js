@@ -22,10 +22,22 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .then(() => {
+
+      const owner = req.params.owner
+      const user = req.params._id
+
+      if (owner !== user) {
+        res.status(401).send({message: 'У вас нет прав на удаление этой карточки'})
+      } else {
+        res.status(200).send({ message: 'Карточка успешно удалена' });
+      }
+    })
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Такой карточки уже не существует' });
-      } else {
+      }
+      else {
         res.status(200).send({ message: 'Карточка успешно удалена' });
       }
     })
