@@ -2,8 +2,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const auth = require('./middlewares/auth')
 
 const someError = require('./middlewares/error')
+const {userLogin, createUser} = require("./controllers/user");
 
 const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
 
@@ -22,6 +24,11 @@ mongoose.connect(BASE_PATH)
     console.error(err);
     console.log(err);
   });
+
+app.post('/signup', createUser);
+app.post('/signin', userLogin)
+
+app.use(auth)
 
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
