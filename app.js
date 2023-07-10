@@ -1,9 +1,14 @@
-const path = require('path');
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
+const auth = require('./middlewares/auth');
 
-const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
+const handleError = require('./middlewares/handleError');
+const { userLogin, createUser } = require('./controllers/user');
+const { validateUserAuth, validateUserCreate } = require('./utils/joiValidate');
+
+const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodibil';
 
 const { PORT = 3000 } = process.env;
 
@@ -12,13 +17,6 @@ const app = express();
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-  req.user = {
-    _id: '64a08c746e2003ab285b35c9',
-  };
-
-  next();
-});
 
 mongoose.connect(BASE_PATH)
   .then(() => {
@@ -28,6 +26,11 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
+app.post('/signup', validateUserCreate, createUser);
+app.post('/signin', validateUserAuth, userLogin);
+
+app.use(auth);
+
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
 
@@ -35,9 +38,10 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Такого пути не существует' });
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(errors());
+app.use(handleError);
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');
-  console.log('mongodb://localhost:27017/mestodb');
+  console.log('mongodb://localhost:27017/mestodibil');
 });
