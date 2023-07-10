@@ -28,7 +28,9 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       const { owner } = card;
       const user = req.user._id;
-      if (!card) return next(new NotFoundError('Такой карточки не существует'));
+      if (!card) {
+        return next(new NotFoundError('Такой карточки не существует'));
+      }
       if (owner.toString() !== user.toString()) {
         return next(new BadForbidden('У вас нет прав на выполнение данного действия'));
       }
@@ -38,7 +40,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (err.name === 'CastError') {
         return next(new ValidationError('Введенные данные не верны'));
       }
-      return next(handleError);
+      return next();
     });
 };
 
