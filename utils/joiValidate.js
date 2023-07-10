@@ -1,7 +1,6 @@
-const { Joi, celebrate, Segments} = require('celebrate')
+const { Joi, celebrate, Segments } = require('celebrate');
 
 const avatarUrl = /^(https?:\/\/)?[^\s]*\.(jpg|jpeg|png|gif|bmp|test)$/;
-
 
 module.exports.validateUser = celebrate({
   [Segments.BODY]: Joi.object().keys({
@@ -12,8 +11,8 @@ module.exports.validateUser = celebrate({
 
 module.exports.validateUserAvatar = celebrate({
   [Segments.BODY]: Joi.object().keys({
-    avatar: Joi.string().pattern(avatarUrl).required()
-  })
+    avatar: Joi.string().pattern(avatarUrl).required(),
+  }),
 });
 
 module.exports.validateUserID = celebrate({
