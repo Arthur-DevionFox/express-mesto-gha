@@ -37,7 +37,7 @@ module.exports.getMe = (req, res, next) => {
       if (!user) {
         return next(new NotFoundError('Пользователь с подобным id не найден'));
       } else {
-        return res.status(201).send(user);
+        return res.status(200).send(user);
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
@@ -83,14 +83,14 @@ module.exports.userLogin = (req, res, next) => {
       if (!user) {
         return Promise.reject(new ValidationError('Неправильные почта или пароль'));
       }
-      return bcrypt.compare(password, user.password);
-    })
-    .then((matched) => {
-      if (!matched) {
-        return Promise.reject(new ValidationError('Неправильные почта или пароль'));
-      }
-      const token = jwt.sign({ _id: req.params._id }, 'token', { expiresIn: '7d' });
-      return res.status(200).send({ message: 'Все верно', token });
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new ValidationError('Неправильные почта или пароль'));
+          }
+          const token = jwt.sign({ _id: user._id }, 'token', { expiresIn: '7d' });
+          return res.status(200).send({ message: 'Все верно', token });
+        })
     })
     .catch(() => {
       return next(new AuthError('Пользователя с такой почтой не существует'))
