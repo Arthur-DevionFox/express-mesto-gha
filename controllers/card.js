@@ -35,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
       return card.deleteOne().then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
     .catch((err) => {
-      if (err.kind === 'ObjectId') {
+      if (err.name === 'CastError') {
         return next(new ValidationError('Введенные данные не верны'));
       }
       return next(handleError);
