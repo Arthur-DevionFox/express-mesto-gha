@@ -34,12 +34,6 @@ module.exports.deleteCard = (req, res, next) => {
       }
       return card.deleteOne().then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
-    .then((card) => {
-      if (!card) {
-        return next(new NotFoundError('Такой карточки не существует'));
-      }
-      return res.status(200).send({ message: 'Карточка успешно удалена' });
-    })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         return next(new ValidationError('Введенные данные не верны'));
