@@ -4,7 +4,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth');
 
-const someError = require('./middlewares/handleError');
+const { errors } = require('celebrate')
+
+const handleError = require('./middlewares/handleError');
 const { userLogin, createUser } = require('./controllers/user');
 const { validateUserAuth, validateUserCreate } = require('./utils/joiValidate');
 
@@ -38,8 +40,11 @@ app.use('*', (req, res) => {
   res.status(404).send({ message: 'Такого пути не существует' });
 });
 
+app.use(errors());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(someError);
+app.use(handleError);
+
+console.log(handleError)
 
 app.listen(PORT, () => {
   console.log('Ссылка на сервер');

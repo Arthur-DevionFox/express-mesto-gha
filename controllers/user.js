@@ -35,13 +35,13 @@ module.exports.getMe = (req, res, next) => {
   User.findById(user)
     .then(() => {
       if (!user) {
-        next(new Error('Пользователь с подобным id не найден'));
+        next(new NotFoundError('Пользователь с подобным id не найден'));
       } else {
         res.status(201).send(user);
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
-        next(new Error('Неверный формат данных в запросе'));
+        next(new NotFoundError('Неверный формат данных в запросе'));
         return;
       }
       next(err);
@@ -74,24 +74,27 @@ module.exports.createUser = (req, res, next) => {
     });
 };
 
-module.exports.userLogin = (req, res) => {
+module.exports.userLogin = (req, res, next) => {
   const { email, password } = req.body;
 
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new ValidationError('Неправильные почта или пароль'));
       }
       return bcrypt.compare(password, user.password);
     })
     .then((matched) => {
       if (!matched) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        return Promise.reject(new ValidationError('Неправильные почта или пароль'));
+      } else {
+        const token = jwt.sign({ _id: req.params._id }, 'token', { expiresIn: '7d' });
+        return res.status(200).send({ message: 'Все верно', token });
       }
-      const token = jwt.sign({ _id: req.params._id }, 'token', { expiresIn: '7d' });
-      return res.status(200).send({ message: 'Все верно', token });
     })
-    .catch(() => new AuthError('Ошибка авторизации'));
+    .catch(() => {
+      return next(new AuthError('Пользователя с такой почтой не существует'))
+    })
 };
 
 module.exports.updateUser = (req, res, next) => {
