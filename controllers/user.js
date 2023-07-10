@@ -1,22 +1,26 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken');
-const someError = require('../middlewares/error')
+const handleError = require('../middlewares/handleError')
+const ValidationError = require("../errors/ValidationError");
+const ConflictError = require("../errors/ConflictError");
+const NotFoundError = require("../errors/NotFoundError");
+const AuthError = require("../errors/AuthError");
 
 const findById = (req, res, next, id) => {
   User.findById(id)
     .then((user) => {
       if (!user) {
-        res.status(404).send({ message: `Пользователь с данным id: ${id} не найден` });
+        return next(new NotFoundError(`Пользователя с таким ${id} не существует`))
       } else {
         res.status(200).send(user);
       }
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        res.status(400).send({ message: `Введенный id: ${id} не является валидным` });
+        next(new ValidationError('Введенные данные не верны'))
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+        next(handleError)
       }
     });
 };
@@ -51,17 +55,20 @@ module.exports.getUser = (req, res, next) => {
   findById(req, res, next, userId);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, about, avatar, email, password: hash } = req.body;
 
   bcrypt.hash(req.body.password, 10)
     .then(hash => User.create({ name, about, avatar, email, password: hash }))
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
+      if(err.name === '11000') {
+        return next(new ConflictError('Пользователь с таким email уже существует'))
+      }
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Введенные данные не верны' });
+        next(new ValidationError('Введенные данные не верны'))
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+        next(handleError)
       }
     })
 };
@@ -84,37 +91,37 @@ module.exports.userLogin = (req, res) => {
         res.status(200).send({ message: 'Все верно', token});
       }
     })
-    .catch((err) => {
-      res.status(401).send({message: err.message})
+    .catch(() => {
+      return new AuthError('Ошибка авторизации')
     })
 }
 
 
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Введенные данные не верны' });
+        new ValidationError('Введенные данные не верны')
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+        next(handleError)
       }
     });
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Введенные данные не верны' });
+        return new ValidationError('Введенные данные не верны')
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка' });
+        next(handleError)
       }
     });
 };

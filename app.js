@@ -4,7 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const auth = require('./middlewares/auth')
 
-const someError = require('./middlewares/error')
+const someError = require('./middlewares/handleError')
 const {userLogin, createUser} = require("./controllers/user");
 
 const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
