@@ -26,8 +26,8 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
-app.post('/signup', validateUserAuth, createUser);
-app.post('/signin', validateUserCreate, userLogin)
+app.post('/signup',validateUserCreate , createUser);
+app.post('/signin',validateUserAuth , userLogin)
 
 app.use(auth)
 
