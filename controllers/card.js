@@ -2,8 +2,7 @@ const Card = require('../models/card');
 const handleError = require('../middlewares/handleError');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
-const AuthError = require('../errors/AuthError');
-const BadForbidden = require("../errors/BadForbidden");
+const BadForbidden = require('../errors/BadForbidden');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -33,7 +32,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (owner !== user) {
         return next(new BadForbidden('У вас нет прав на выполнение данного действия'));
       }
-      card.deleteOne().then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
+      return card.deleteOne().then(() => res.status(200).send({ message: 'Карточка успешно удалена' }));
     })
     .then((card) => {
       if (!card) {

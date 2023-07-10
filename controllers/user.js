@@ -18,9 +18,8 @@ const findById = (req, res, next, id) => {
     .catch((err) => {
       if (err.kind === 'ObjectId') {
         return next(new ValidationError('Введенные данные не верны'));
-      } else {
-        return next(handleError);
       }
+      return next(handleError);
     });
 };
 
@@ -36,14 +35,13 @@ module.exports.getMe = (req, res, next) => {
     .then((user) => {
       if (!user) {
         return next(new NotFoundError('Пользователь с подобным id не найден'));
-      } else {
-        return res.status(200).send(user);
       }
+      return res.status(200).send(user);
     }).catch((err) => {
       if (err.name === 'CastError') {
         return next(new NotFoundError('Неверный формат данных в запросе'));
       }
-      next(err);
+      return next(err);
     });
 };
 
@@ -90,11 +88,9 @@ module.exports.userLogin = (req, res, next) => {
           }
           const token = jwt.sign({ _id: user._id }, 'token', { expiresIn: '7d' });
           return res.status(200).send({ message: 'Все верно', token });
-        })
+        });
     })
-    .catch(() => {
-      return next(new AuthError('Пользователя с такой почтой не существует'))
-    })
+    .catch(() => next(new AuthError('Пользователя с такой почтой не существует')));
 };
 
 module.exports.updateUser = (req, res, next) => {
