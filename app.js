@@ -29,7 +29,7 @@ mongoose.connect(BASE_PATH)
 app.post('/signup', validateUserCreate, createUser);
 app.post('/signin', validateUserAuth, userLogin);
 
-// app.use(auth);
+app.use(auth);
 
 app.use('/users', require('./routes/user'));
 app.use('/cards', require('./routes/card'));
