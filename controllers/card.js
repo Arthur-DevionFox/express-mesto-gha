@@ -28,7 +28,7 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       const { owner } = req.params;
       const user = req.params._id;
-
+      if (!card) next(new NotFoundError('Такой карточки не существует'));
       if (owner !== user) {
         return next(new BadForbidden('У вас нет прав на выполнение данного действия'));
       }
