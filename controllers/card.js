@@ -3,6 +3,7 @@ const handleError = require('../middlewares/handleError');
 const ValidationError = require('../errors/ValidationError');
 const NotFoundError = require('../errors/NotFoundError');
 const AuthError = require('../errors/AuthError');
+const BadForbidden = require("../errors/BadForbidden");
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -24,21 +25,20 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then(() => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
       const { owner } = req.params;
       const user = req.params._id;
 
       if (owner !== user) {
-        return next(new AuthError('У вас нет прав на выполнение данного действия'));
+        return next(new BadForbidden('У вас нет прав на выполнение данного действия'));
       }
-      return res.status(200).send({ message: 'Карточка успешно удалена' });
+      card.deleteOne().then(() => res.status(200).send({ message: 'Карточка успешно удалена' }))
     })
     .then((card) => {
       if (!card) {
         return next(new NotFoundError('Такой карточки не существует'));
       }
-
       return res.status(200).send({ message: 'Карточка успешно удалена' });
     })
     .catch((err) => {

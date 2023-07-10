@@ -31,9 +31,9 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getMe = (req, res, next) => {
-  const user = req.user._id;
-  User.findById(user)
-    .then(() => {
+  const userId = req.user._id;
+  User.findById(userId)
+    .then((user) => {
       if (!user) {
         return next(new NotFoundError('Пользователь с подобным id не найден'));
       } else {
