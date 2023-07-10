@@ -6,9 +6,9 @@ const {
 const { validateUser, validateUserAvatar, validateUserID } = require('../utils/joiValidate');
 
 router.get('/', getUsers);
+router.get('/me', validateUser, getMe);
+router.patch('/me', validateUser, updateUser);
+router.patch('/me/avatar', validateUserAvatar, updateAvatar);
 router.get('/:userId', validateUserID, getUser);
-router.get('/me',auth, validateUser,  getMe);
-router.patch('/me', auth, validateUser, updateUser);
-router.patch('/me/avatar', auth, validateUserAvatar, updateAvatar);
 
 module.exports = router;

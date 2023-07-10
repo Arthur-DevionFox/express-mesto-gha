@@ -1,10 +1,12 @@
-module.exports = function handleError(err, req, res) {
-  const { statusCode = 500 } = err;
-  let { message } = err;
+module.exports = function handleError(err, req, res, next) {
+  const { statusCode = 500, message } = err;
 
-  if (statusCode === 500) {
-    message = 'Произошла непредвиденная ошибка';
-  }
-  res.status(statusCode).send({ message });
-
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message
+    });
 };

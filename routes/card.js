@@ -5,10 +5,10 @@ const {
 const auth = require('../middlewares/auth');
 const { validateCardID, validateCard } = require('../utils/joiValidate');
 
-router.get('/', auth, getCards);
-router.post('/', auth, validateCard, createCard);
-router.delete('/:cardId', validateCardID, auth, deleteCard);
-router.put('/:cardId/likes', validateCardID, auth, likeCard);
-router.delete('/:cardId/likes', validateCardID, auth, dislikeCard);
+router.get('/', getCards);
+router.post('/', validateCard, createCard);
+router.delete('/:cardId', validateCardID, deleteCard);
+router.put('/:cardId/likes', validateCardID, likeCard);
+router.delete('/:cardId/likes', validateCardID, dislikeCard);
 
 module.exports = router;

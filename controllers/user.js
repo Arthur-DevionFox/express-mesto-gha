@@ -17,9 +17,9 @@ const findById = (req, res, next, id) => {
     })
     .catch((err) => {
       if (err.kind === 'ObjectId') {
-        next(new ValidationError('Введенные данные не верны'));
+        return next(new ValidationError('Введенные данные не верны'));
       } else {
-        next(handleError);
+        return next(handleError);
       }
     });
 };
@@ -35,14 +35,13 @@ module.exports.getMe = (req, res, next) => {
   User.findById(user)
     .then(() => {
       if (!user) {
-        next(new NotFoundError('Пользователь с подобным id не найден'));
+        return next(new NotFoundError('Пользователь с подобным id не найден'));
       } else {
-        res.status(201).send(user);
+        return res.status(201).send(user);
       }
     }).catch((err) => {
       if (err.name === 'CastError') {
-        next(new NotFoundError('Неверный формат данных в запросе'));
-        return;
+        return next(new NotFoundError('Неверный формат данных в запросе'));
       }
       next(err);
     });
@@ -62,15 +61,17 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.status(201).send({ user: user.name, id: user._id, about: user.about, email: user.email }))
+    .then((user) => res.status(201).send({
+      name: user.name, id: user._id, about: user.about, email: user.email, avatar: user.avatar,
+    }))
     .catch((err) => {
-      if (err.name === '11000') {
+      if (err.code === 11000) {
         return next(new ConflictError('Пользователь с таким email уже существует'));
       }
       if (err.name === 'ValidationError') {
         return next(new ValidationError('Введенные данные не верны'));
       }
-      return next(handleError);
+      return next();
     });
 };
 
@@ -87,10 +88,9 @@ module.exports.userLogin = (req, res, next) => {
     .then((matched) => {
       if (!matched) {
         return Promise.reject(new ValidationError('Неправильные почта или пароль'));
-      } else {
-        const token = jwt.sign({ _id: req.params._id }, 'token', { expiresIn: '7d' });
-        return res.status(200).send({ message: 'Все верно', token });
       }
+      const token = jwt.sign({ _id: req.params._id }, 'token', { expiresIn: '7d' });
+      return res.status(200).send({ message: 'Все верно', token });
     })
     .catch(() => {
       return next(new AuthError('Пользователя с такой почтой не существует'))

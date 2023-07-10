@@ -31,6 +31,7 @@ const userSchema = new mongoose.Schema({
       message: 'Некорректный Email',
     },
     require: true,
+    unique: true
   },
   password: {
     type: String,
