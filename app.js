@@ -6,6 +6,7 @@ const auth = require('./middlewares/auth')
 
 const someError = require('./middlewares/handleError')
 const {userLogin, createUser} = require("./controllers/user");
+const {validateUserAuth, validateUserCreate} = require("./utils/joiValidate");
 
 const BASE_PATH = 'mongodb://127.0.0.1:27017/mestodb';
 
@@ -25,8 +26,8 @@ mongoose.connect(BASE_PATH)
     console.log(err);
   });
 
-app.post('/signup', createUser);
-app.post('/signin', userLogin)
+app.post('/signup', validateUserAuth, createUser);
+app.post('/signin', validateUserCreate, userLogin)
 
 app.use(auth)
 
